@@ -53,6 +53,7 @@ async def on_message(msg: Message):
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 await me.say(filebox)
+        # 低风险投资3群
         elif msg.room().room_id == '4932234304@chatroom':
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
