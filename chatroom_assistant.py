@@ -18,12 +18,7 @@ log = logging.getLogger(__name__)
 bot = None
 counter = 0
 
-KEYWORDS=[
-    ['额度', '10倍'],
-    ['额度', '20倍'],
-    ['乙组', '预约'],
-    ['38', '餐'],
-]
+KEYWORDS=['额度']
 
 async def on_message(msg: Message):
     """
@@ -56,23 +51,15 @@ async def on_message(msg: Message):
                 await me.say(filebox)
         # 低风险投资3群
         elif msg.room().room_id == '4932234304@chatroom':
-            # TODO: Also filter on sender
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 await me.say(filebox)
-        elif msg.room().room_id == '17346331234@chatroom':
-            # TODO: Also filter on sender
-            if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
-                filebox = await msg.to_file_box()
-                await me.say(filebox)
+        elif topic == '投资学习8群':
+            log.error(msg.room().room_id)
         else:
-            for keywords in KEYWORDS:
-                match = True
-                for word in keywords:
-                    if word not in text:
-                        match = False
-                if match:
-                    log.error('contains keyword: %s' % keywords)
+            for keyword in KEYWORDS:
+                if keyword in text:
+                    log.error('contains keyword: %s' % keyword)
                     await me.say('来自群: %s' % topic)
                     await msg.forward(me)
     else:
