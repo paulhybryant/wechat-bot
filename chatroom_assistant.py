@@ -39,7 +39,7 @@ async def on_message(msg: Message):
             await me.say('来自群: %s' % topic)
             await msg.forward(me)
         # @all
-        elif '@所有人' in mention_text or '@All' An mention_text:
+        elif '@所有人' in mention_text or '@All' in mention_text:
             log.error('mentioned all')
             await me.say('来自群: %s' % topic)
             await msg.forward(me)
