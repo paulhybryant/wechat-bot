@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 bot = None
 counter = 0
 
+KEYWORDS=['额度']
 
 async def on_message(msg: Message):
     """
@@ -43,11 +44,6 @@ async def on_message(msg: Message):
             log.error('mentioned all')
             await me.say('来自群: %s' % topic)
             await msg.forward(me)
-        # match string
-        elif '额度' in text:
-            log.error('contains 额度: %s' % text)
-            await me.say('来自群: %s' % topic)
-            await msg.forward(me)
         elif topic == 'MyAssistant':
             log.error(msg)
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
@@ -58,6 +54,14 @@ async def on_message(msg: Message):
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 await me.say(filebox)
+        elif topic == '投资学习8群':
+            log.error(msg.room().room_id)
+        else:
+            for keyword in KEYWORDS:
+                if keyword in text:
+                    log.error('contains keyword: %s' % keyword)
+                    await me.say('来自群: %s' % topic)
+                    await msg.forward(me)
     else:
         log.error(msg)
         if text == '#你最喜欢谁':
