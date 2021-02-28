@@ -54,8 +54,12 @@ async def on_message(msg: Message):
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 await me.say(filebox)
+        # TODO: Automatically cache chatroom ids, given topic (room name)
         elif topic == '投资学习8群':
             log.error(msg.room().room_id)
+            if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                filebox = await msg.to_file_box()
+                await me.say(filebox)
         else:
             for keyword in KEYWORDS:
                 if keyword in text:
@@ -64,10 +68,8 @@ async def on_message(msg: Message):
                     await msg.forward(me)
     else:
         log.error(msg)
-        if text == '#你最喜欢谁':
-            await msg.say('当然是bibi了')
-        elif text == '#谁最可爱':
-            await msg.say('萌萌')
+        if text == '#weather':
+            await msg.say('TODO: report today\'s weather')
 
 
 async def on_scan(qrcode: str, status: int, data):
