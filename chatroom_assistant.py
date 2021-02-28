@@ -44,6 +44,7 @@ async def on_message(msg: Message):
             log.error('mentioned all')
             await me.say('来自群: %s' % topic)
             await msg.forward(me)
+        # For testing
         elif topic == 'MyAssistant':
             log.error(msg)
             if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
