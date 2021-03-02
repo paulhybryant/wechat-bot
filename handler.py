@@ -20,7 +20,8 @@ logging.basicConfig(level=logging.ERROR)
 log = logging.getLogger(__name__)
 
 class MessageHandler():
-    def __init__(self):
+    def __init__(self, bot):
+        self._bot = bot
         self._counter = 0
         self._cmds_re = re.compile(r'#(\w+) (.*)')
         self._keywords = [
@@ -57,7 +58,7 @@ class MessageHandler():
     async def handle(self, msg: Message):
         self._counter += 1
         log.error('received %s messages' % self._counter)
-        me = bot.Contact.load('paulhybryant0104')
+        me = self._bot.Contact.load('paulhybryant0104')
         text = msg.text()
         mention_self = await msg.mention_self()
         mention_text = await msg.mention_text()
@@ -94,7 +95,7 @@ class MessageHandler():
                     await me.say(filebox)
             else:
                 for keywords in self._keywords:
-                    if message_contains_words(text, keywords):
+                    if self.message_contains_words(text, keywords):
                         log.error('contains keywords: %s' % keywords)
                         await me.say('来自群: %s' % topic)
                         await msg.forward(me)

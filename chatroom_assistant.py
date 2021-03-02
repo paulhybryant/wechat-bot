@@ -2,22 +2,23 @@
 """
 """
 import asyncio
+import os
 from handler import MessageHandler
 
 from wechaty import (
     Contact,
+    Message,
     Wechaty,
 )
 
 bot = None
-handler = MessageHandler()
+handler = None
 
 async def on_message(msg: Message):
     """
     Message Handler for the Bot
     """
-    global handler
-    handler.handle(msg)
+    await handler.handle(msg)
 
 
 async def on_scan(qrcode: str, status: int, data):
@@ -49,6 +50,9 @@ async def main():
 
     global bot
     bot = Wechaty()
+
+    global handler
+    handler = MessageHandler(bot)
 
     bot.on('scan',      on_scan)
     bot.on('login',     on_login)
