@@ -29,25 +29,25 @@ class MessageHandler():
             ['融资', '10倍'],
             ['融资', '20倍'],
         ]
-        self._weather_data = {}
-        with open('weather.xml', 'r') as f:
-            xml = xmltodict.parse(f.read())
-            for province in xml['China']['province']:
-                self._weather_data[province['@name']] = {}
-                cities = None
-                if isinstance(province['city'], list):
-                    cities = province['city']
-                else:
-                    cities = [province['city']]
-                for city in cities:
-                    self._weather_data[province['@name']][city['@name']] = {}
-                    counties = None
-                    if isinstance(city['county'], list):
-                        counties = city['county']
-                    else:
-                        counties = [city['county']]
-                    for county in counties:
-                        self._weather_data[province['@name']][city['@name']][county['@name']] = county['@weatherCode']
+        #  self._weather_data = {}
+        #  with open('weather.xml', 'r') as f:
+            #  xml = xmltodict.parse(f.read())
+            #  for province in xml['China']['province']:
+                #  self._weather_data[province['@name']] = {}
+                #  cities = None
+                #  if isinstance(province['city'], list):
+                    #  cities = province['city']
+                #  else:
+                    #  cities = [province['city']]
+                #  for city in cities:
+                    #  self._weather_data[province['@name']][city['@name']] = {}
+                    #  counties = None
+                    #  if isinstance(city['county'], list):
+                        #  counties = city['county']
+                    #  else:
+                        #  counties = [city['county']]
+                    #  for county in counties:
+                        #  self._weather_data[province['@name']][city['@name']][county['@name']] = county['@weatherCode']
 
     def message_contains_words(self, text: str, keywords: list):
         for keyword in keywords:
@@ -114,8 +114,18 @@ class MessageHandler():
                 else:
                     await msg.say('Invalid command: %s' % text)
 
-    # args: 'province city county'
+    # args: 'city'
     def weather(self, args: str):
+        r = requests.get('http://wthrcdn.etouch.cn/weather_mini?city=%s' % args)
+        r.encoding = 'utf-8'
+        if r.status_code == 200:
+            data = r.json()['data']['forecast'][0]
+            return '%s%s天气： %s - %s， %s%s， %s' % (args, data['date'], data['low'], data['high'], data['fengxiang'], data['fengli'], data['type'])
+        else:
+            return 'Failure status: %s' % r.status_code
+
+    # args: 'province city county'
+    def weather_deprecated(self, args: str):
         params = args.split(' ')
         if len(params) != 3:
             return 'Invalid argument to command: %s, expecting <province city county>'
