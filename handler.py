@@ -101,18 +101,23 @@ class MessageHandler():
                         await msg.forward(me)
         else:
             log.error(msg)
-            if text.startswith('#'):
-                m = self._cmds_re.match(text)
-                if m:
-                    try:
-                        cmd = getattr(self, m.group(1))
-                        result = cmd(m.group(2))
-                        log.error(result)
-                        await msg.say(result)
-                    except AttributeError:
-                        await msg.say('Unimplemented command: %s' % m.group(1))
-                else:
-                    await msg.say('Invalid command: %s' % text)
+            result = handle_cmd(text)
+            if result:
+                log.error(result)
+                await msg.say(result)
+
+    def handle_cmd(self, cmd):
+        if cmd.startswith('#'):
+            m = self._cmds_re.match(cmd)
+            if m:
+                try:
+                    cmd = getattr(self, m.group(1))
+                    return cmd(m.group(2))
+                except AttributeError:
+                    return ('Unimplemented command: %s' % m.group(1))
+            else:
+                return ('Invalid command: %s' % cmd)
+        return None
 
     # args: 'city'
     def weather(self, args: str):
