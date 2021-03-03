@@ -59,7 +59,7 @@ class MessageHandler():
             result = self.handle_cmd(text)
             if result:
                 log.error(result)
-                await me.say(result)
+                await msg.say(result)
 
     def handle_room(self, topic, text, mention_self, mention_text, room_id, msg_type):
         # @me
