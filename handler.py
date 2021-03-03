@@ -6,7 +6,7 @@ import logging
 import os
 import re
 import requests
-import xmltodict
+import subprocess
 
 from wechaty import (
     Contact,
@@ -29,6 +29,7 @@ class MessageHandler():
             ['融资', '10倍'],
             ['融资', '20倍'],
         ]
+        self._config = {}
 
     def message_contains_words(self, text: str, keywords: list):
         for keyword in keywords:
@@ -61,7 +62,29 @@ class MessageHandler():
                 log.error(result)
                 await msg.say(result)
 
-    def handle_room(self, topic, text, mention_self, mention_text, room_id, msg_type):
+            if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                filebox = await msg.to_file_box()
+                if filebox.name.endswith('doc') or filebox.name.endswith('docx'):
+                    if self._config.get('doc2pdf', default = True):
+                        doc = await filebox.to_file(filebox.name)
+                        converted, error = doc2pdf(doc)
+                        if converted:
+                            pdf = await filebox.from_file(converted)
+                            await me.say(pdf)
+
+    def doc2pdf(self, f):
+        result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f.name], capture_output=True)
+        if result.returncode == 0:
+            doc_re = re.compile(r'(.*)\.docx?')
+            m = doc_re.match(f.name)
+            if m:
+                return ('%s.pdf' % m.group(1), None)
+            else:
+                return (None, "Cannot get basename of %s" % f.name)
+        else:
+            return (None, result.stdout)
+
+    def handle_room(self, topic: str, text: str, mention_self: bool, mention_text: str, room_id: str, msg_type: MessageType):
         # @me
         if mention_self:
             log.error('mentioned me')
@@ -91,17 +114,18 @@ class MessageHandler():
                     return True
         return False
 
-    def handle_cmd(self, cmd):
+    def handle_cmd(self, cmd: str):
         if cmd.startswith('#'):
             m = self._cmds_re.match(cmd)
             if m:
+                cmd = m.group(1)
                 try:
-                    cmd = getattr(self, m.group(1))
-                    return cmd(m.group(2))
+                    fn = getattr(self, cmd)
+                    return fn(m.group(2))
                 except AttributeError:
-                    return ('Unimplemented command: %s' % m.group(1))
+                    return (f'Unimplemented command: {cmd}')
             else:
-                return ('Invalid command: %s' % cmd)
+                return (f'Invalid command: {cmd}')
         return None
 
     # args: 'city'
@@ -113,3 +137,13 @@ class MessageHandler():
             return '%s%s天气： %s - %s， %s%s， %s' % (args, data['date'], data['low'], data['high'], data['fengxiang'], data['fengli'], data['type'])
         else:
             return 'Failure status: %s' % r.status_code
+
+    def enable(self, args: str):
+        if args in ['enable', 'disable']:
+            return 'Cannot enable / disable command %s' % args
+        self._config[args] = True
+
+    def disable(self, args: str):
+        if args in ['enable', 'disable']:
+            return 'Cannot enable / disable command %s' % args
+        self._config[args] = False

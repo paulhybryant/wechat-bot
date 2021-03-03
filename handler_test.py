@@ -3,6 +3,7 @@ import unittest
 
 from handler import MessageHandler
 from wechaty import (
+    FileBox,
     MessageType,
 )
 
@@ -17,6 +18,12 @@ class BotTest(unittest.TestCase):
         handler = MessageHandler(None)
         result = handler.message_contains_words('9:30放额度，最高20倍，手慢无', ['额度', '20倍'])
         self.assertEqual(result, True)
+
+    def test_doc2pdf(self):
+        handler = MessageHandler(None)
+        filebox = FileBox.from_file("testdata/Test.docx")
+        result, error = handler.doc2pdf(filebox)
+        self.assertEqual(result, "Test.pdf")
 
     def test_handle_cmd(self):
         handler = MessageHandler(None)
