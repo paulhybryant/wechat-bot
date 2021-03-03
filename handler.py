@@ -65,16 +65,20 @@ class MessageHandler():
         if msg.room():
             topic = await msg.room().topic()
             log.error('room: %s, topic %s' % (msg.room().room_id, topic))
-            forward = handle_room(topic, text, mention_self, mention_text, msg.room().room_id, msg.type())
+            forward = self.handle_room(topic, text, mention_self, mention_text, msg.room().room_id, msg.type())
             if forward:
-                await msg.say('来自群: %s' % topic)
-                await msg.forward(me)
+                await me.say('来自群: %s' % topic)
+                if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                    filebox = await msg.to_file_box()
+                    await me.say(filebox)
+                else:
+                    await msg.forward(me)
         else:
             log.error(msg)
-            result = handle_cmd(text)
+            result = self.handle_cmd(text)
             if result:
                 log.error(result)
-                await msg.say(result)
+                await me.say(result)
 
     def handle_room(self, topic, text, mention_self, mention_text, room_id, msg_type):
         # @me
