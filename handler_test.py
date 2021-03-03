@@ -10,8 +10,6 @@ class BotTest(unittest.TestCase):
 
     def test_weather(self):
         handler = MessageHandler(None)
-        #  result = handler.weather('北京 北京 海淀')
-        #  self.assertRegex(result, '海淀 .*')
         result = handler.weather('北京')
         self.assertRegex(result, '北京.*天气： .*')
 
