@@ -65,46 +65,46 @@ class MessageHandler():
         if msg.room():
             topic = await msg.room().topic()
             log.error('room: %s, topic %s' % (msg.room().room_id, topic))
-            # @me
-            if mention_self:
-                log.error('mentioned me')
-                await me.say('来自群: %s' % topic)
+            forward = handle_room(topic, text, mention_self, mention_text, msg.room().room_id, msg.type())
+            if forward:
+                await msg.say('来自群: %s' % topic)
                 await msg.forward(me)
-            # @all
-            elif '@所有人' in mention_text or '@All' in mention_text:
-                log.error('mentioned all')
-                await me.say('来自群: %s' % topic)
-                await msg.forward(me)
-            # For testing
-            elif topic == 'MyAssistant':
-                log.error(msg)
-                if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
-                    filebox = await msg.to_file_box()
-                    await me.say(filebox)
-            # TODO: Automatically cache chatroom ids, given topic (room name)
-            # TODO: Only forward file from specific talker
-            # 低风险投资3群
-            elif msg.room().room_id == '4932234304@chatroom':
-                if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
-                    filebox = await msg.to_file_box()
-                    await me.say(filebox)
-            # 投资学习8群
-            elif msg.room().room_id == '17346331234@chatroom':
-                if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
-                    filebox = await msg.to_file_box()
-                    await me.say(filebox)
-            else:
-                for keywords in self._keywords:
-                    if self.message_contains_words(text, keywords):
-                        log.error('contains keywords: %s' % keywords)
-                        await me.say('来自群: %s' % topic)
-                        await msg.forward(me)
         else:
             log.error(msg)
             result = handle_cmd(text)
             if result:
                 log.error(result)
                 await msg.say(result)
+
+    def handle_room(self, topic, text, mention_self, mention_text, room_id, msg_type):
+        # @me
+        if mention_self:
+            log.error('mentioned me')
+            return True
+        # @all
+        elif '@所有人' in mention_text or '@All' in mention_text:
+            log.error('mentioned all')
+            return True
+        # For testing
+        elif room_id == '26833418609@chatroom':
+            if  msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                return True
+        # TODO: Automatically cache chatroom ids, given topic (room name)
+        # TODO: Only forward file from specific talker
+        # 低风险投资3群
+        elif room_id == '4932234304@chatroom':
+            if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                return True
+        # 投资学习8群
+        elif room_id == '17346331234@chatroom':
+            if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
+                return True
+        else:
+            for keywords in self._keywords:
+                if self.message_contains_words(text, keywords):
+                    log.error('contains keywords: %s' % keywords)
+                    return True
+        return False
 
     def handle_cmd(self, cmd):
         if cmd.startswith('#'):

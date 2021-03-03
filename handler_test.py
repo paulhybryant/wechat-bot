@@ -2,6 +2,9 @@
 import unittest
 
 from handler import MessageHandler
+from wechaty import (
+    MessageType,
+)
 
 class BotTest(unittest.TestCase):
 
@@ -25,6 +28,36 @@ class BotTest(unittest.TestCase):
         self.assertRegex(result, 'Unimplemented command: .*')
         result = handler.handle_cmd('#@$ test')
         self.assertRegex(result, 'Invalid command: .*')
+
+    def test_handle_room(self):
+        handler = MessageHandler(None)
+        # mentioned me
+        forward = handler.handle_room('测试群', '测试', True, '', 'id', None)
+        self.assertTrue(forward)
+
+        # mentioned all
+        forward = handler.handle_room('测试群', '测试', False, '@All', 'id', None)
+        self.assertTrue(forward)
+
+        # specific room, has attachment
+        forward = handler.handle_room('测试群', '测试', False, '', '4932234304@chatroom', MessageType.MESSAGE_TYPE_ATTACHMENT)
+        self.assertTrue(forward)
+
+        # specific room, no attachment
+        forward = handler.handle_room('测试群', '测试', False, '', '4932234304@chatroom', None)
+        self.assertFalse(forward)
+
+        # keywords match
+        forward = handler.handle_room('测试群', '有额度', False, '', '', None)
+        self.assertTrue(forward)
+
+        # no keywords match
+        forward = handler.handle_room('测试群', '测试', False, '', '4932234304@chatroom', None)
+        self.assertFalse(forward)
+
+        # skipped
+        forward = handler.handle_room('测试群', '测试', False, '', 'id', None)
+        self.assertFalse(forward)
 
 if __name__ == '__main__':
     unittest.main()
