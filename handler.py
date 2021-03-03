@@ -104,12 +104,12 @@ class MessageHandler():
             if text.startswith('#'):
                 m = self._cmds_re.match(text)
                 if m:
-                    cmd = getattr(self, m.group(1))
-                    if cmd:
+                    try:
+                        cmd = getattr(self, m.group(1))
                         result = cmd(m.group(2))
                         log.error(result)
                         await msg.say(result)
-                    else:
+                    except AttributeError:
                         await msg.say('Unimplemented command: %s' % m.group(1))
                 else:
                     await msg.say('Invalid command: %s' % text)
