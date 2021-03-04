@@ -64,7 +64,7 @@ class MessageHandler():
                 log.error(result)
                 await msg.say(result)
 
-            if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
+            if (msg.talker().contact_id == 'paulhybryant' or msg.talker().contact_id == 'paulhybryant0104') and msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 doc_re = re.compile(r'(.*)\.docx?')
                 m = doc_re.match(filebox.name)
