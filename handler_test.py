@@ -22,8 +22,8 @@ class BotTest(unittest.TestCase):
     def test_doc2pdf(self):
         handler = MessageHandler(None)
         filebox = FileBox.from_file("testdata/Test.docx")
-        result, error = handler.doc2pdf(filebox)
-        self.assertEqual(result, "Test.pdf")
+        result, error = handler.doc2pdf(filebox, "Test")
+        self.assertEqual(result, "/tmp/Test.pdf")
 
     def test_handle_cmd(self):
         handler = MessageHandler(None)

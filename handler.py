@@ -64,23 +64,22 @@ class MessageHandler():
 
             if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
-                if filebox.name.endswith('doc') or filebox.name.endswith('docx'):
+                doc_re = re.compile(r'(.*)\.docx?')
+                m = doc_re.match(filebox.name)
+                if m:
                     if self._config.get('doc2pdf', default = True):
                         doc = await filebox.to_file(filebox.name)
-                        converted, error = doc2pdf(doc)
+                        converted, error = doc2pdf(doc, m.group(1))
                         if converted:
                             pdf = await filebox.from_file(converted)
                             await me.say(pdf)
 
-    def doc2pdf(self, f):
-        result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f.name], capture_output=True)
+    def doc2pdf(self, f, basename):
+        # soffice is not available in my environment, yikes!
+        # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f.name], capture_output=True)
+        result = subprocess.run(['./doc2pdf.sh', f.name], capture_output=True)
         if result.returncode == 0:
-            doc_re = re.compile(r'(.*)\.docx?')
-            m = doc_re.match(f.name)
-            if m:
-                return ('%s.pdf' % m.group(1), None)
-            else:
-                return (None, "Cannot get basename of %s" % f.name)
+            return ('/tmp/%s.pdf' % basename, None)
         else:
             return (None, result.stdout)
 
