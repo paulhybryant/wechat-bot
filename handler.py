@@ -37,6 +37,8 @@ class MessageHandler():
                 return False
         return True
 
+    # TODO: Use asyncio unittest to test the code here
+    # TODO: Use wechaty-mock for testing
     async def handle(self, msg: Message):
         self._counter += 1
         log.error('received %s messages' % self._counter)
@@ -62,22 +64,22 @@ class MessageHandler():
                 log.error(result)
                 await msg.say(result)
 
-            if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
+            if msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 doc_re = re.compile(r'(.*)\.docx?')
                 m = doc_re.match(filebox.name)
                 if m:
-                    if self._config.get('doc2pdf', default = True):
-                        doc = await filebox.to_file(filebox.name)
-                        converted, error = doc2pdf(doc, m.group(1))
+                    if self._config.get('doc2pdf', True):
+                        await filebox.to_file(filebox.name, True)
+                        converted, error = self.doc2pdf(filebox.name, m.group(1))
                         if converted:
-                            pdf = await filebox.from_file(converted)
+                            pdf = filebox.from_file(converted)
                             await me.say(pdf)
 
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
         # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f.name], capture_output=True)
-        result = subprocess.run(['./doc2pdf.sh', f.name], capture_output=True)
+        result = subprocess.run(['/share/homes/admin/gitrepo/wechat-bot/doc2pdf.sh', f], capture_output=True)
         if result.returncode == 0:
             return ('/tmp/%s.pdf' % basename, None)
         else:
