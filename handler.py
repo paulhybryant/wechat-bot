@@ -8,6 +8,7 @@ import re
 import requests
 import subprocess
 
+from google_trans_new import google_translator
 from wechaty import (
     Contact,
     FileBox,
@@ -78,7 +79,7 @@ class MessageHandler():
 
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
-        # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f.name], capture_output=True)
+        # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f], capture_output=True)
         result = subprocess.run(['/share/homes/admin/gitrepo/wechat-bot/doc2pdf.sh', f], capture_output=True)
         if result.returncode == 0:
             return ('/tmp/%s.pdf' % basename, None)
@@ -138,6 +139,11 @@ class MessageHandler():
             return '%s%s天气： %s - %s， %s%s， %s' % (args, data['date'], data['low'], data['high'], data['fengxiang'], data['fengli'], data['type'])
         else:
             return 'Failure status: %s' % r.status_code
+
+    # args: 'text to translate'
+    def translate(self, args: str):
+        translator = google_translator()
+        return translator.translate(args)
 
     def enable(self, args: str):
         if args in ['enable', 'disable']:

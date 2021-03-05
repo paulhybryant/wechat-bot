@@ -1,4 +1,5 @@
 # -*- coding=utf-8 -*-
+import os
 import unittest
 
 from handler import MessageHandler
@@ -9,6 +10,11 @@ from wechaty import (
 
 class BotTest(unittest.TestCase):
 
+    def test_translate(self):
+        handler = MessageHandler(None)
+        result = handler.translate('Recuerden. Hoy es el foro para la comunidad Hispana con la Gobernadora Gina Raimondo y la Comisionada @AInfanteGreen en vivo por Facebook Live. Envien sus preguntas con anticipación usando este enlace: http://ow.ly/QJIj50zozbq.')
+        self.assertRegex(result, 'Remember.*')
+        
     def test_weather(self):
         handler = MessageHandler(None)
         result = handler.weather('北京')
@@ -21,9 +27,10 @@ class BotTest(unittest.TestCase):
 
     def test_doc2pdf(self):
         handler = MessageHandler(None)
-        filebox = FileBox.from_file("testdata/Test.docx")
-        result, error = handler.doc2pdf(filebox, "Test")
-        self.assertEqual(result, "/tmp/Test.pdf")
+        # filebox = FileBox.from_file('testdata/Test.docx')
+        # result, error = handler.doc2pdf(filebox, 'Test')
+        result, error = handler.doc2pdf('testdata/Test.doc', 'Test')
+        self.assertTrue(os.path.exists('/tmp/Test.pdf'))
 
     def test_handle_cmd(self):
         handler = MessageHandler(None)
