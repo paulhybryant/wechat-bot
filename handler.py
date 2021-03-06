@@ -30,6 +30,16 @@ class MessageHandler():
             ['融资', '10倍'],
             ['融资', '20倍'],
         ]
+        self._subscriptions = [
+            '复利先生',
+            '复利人生',
+            '爱投资的小熊猫',
+            '郭二侠鑫金融',
+            '唐书房',
+            '萌哥阵地',
+            '股市药丸',
+            '财富严选',
+        ]
         self._config = {}
 
     def message_contains_words(self, text: str, keywords: list):
@@ -76,6 +86,11 @@ class MessageHandler():
                         if converted:
                             pdf = filebox.from_file(converted)
                             await me.say(pdf)
+            if msg.type() == MessageType.MESSAGE_TYPE_URL:
+                talker = msg.talker().name
+                if talker in self._subscriptions:
+                    await me.say('From: %s' % talker)
+                    await msg.forward(me)
 
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
