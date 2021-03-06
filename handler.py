@@ -32,13 +32,21 @@ class MessageHandler():
         ]
         self._subscriptions = [
             '复利先生',
+            '持有封基',
             '复利人生',
-            '爱投资的小熊猫',
-            '郭二侠鑫金融',
+            '投机箴言',
             '唐书房',
-            '萌哥阵地',
             '股市药丸',
             '财富严选',
+            '盛唐风物',
+            '爱投资的小熊猫',
+            '郭二侠鑫金融',
+            '萌哥阵地',
+            '量化简财',
+            '涛哥讲新股',
+            '老郭聊新股',
+            '站在Ju人肩上A',
+            '新股渔夫',
         ]
         self._config = {}
 
@@ -87,15 +95,15 @@ class MessageHandler():
                             pdf = filebox.from_file(converted)
                             await me.say(pdf)
             if msg.type() == MessageType.MESSAGE_TYPE_URL:
-                talker = msg.talker().name
-                if talker in self._subscriptions:
-                    await me.say('From: %s' % talker)
+                talker = msg.talker()
+                if talker.name in self._subscriptions:
+                    await me.say('来自公众号： %s' % talker.name)
                     await msg.forward(me)
 
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
         # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f], capture_output=True)
-        result = subprocess.run(['/share/homes/admin/gitrepo/wechat-bot/doc2pdf.sh', f], capture_output=True)
+        result = subprocess.run(['sh', 'doc2pdf.sh', f], capture_output=True)
         if result.returncode == 0:
             return ('/tmp/%s.pdf' % basename, None)
         else:
