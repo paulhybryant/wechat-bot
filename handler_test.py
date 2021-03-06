@@ -10,14 +10,12 @@ from wechaty import (
 
 class BotTest(unittest.TestCase):
 
-    def test_files(self):
+    def test_getfile(self):
         handler = MessageHandler(None)
-        result = handler.files('testdata/Test.docx')
+        result = handler.getfile('testdata/Test.docx')
         self.assertRegex(result.name, 'Test.docx')
-        result = handler.files('foo.docx')
+        result = handler.getfile('foo.docx')
         self.assertEqual(result, 'file foo.docx not exists')
-        result = handler.files(None)
-        self.assertEqual(result, "['foo.txt', 'bar.txt']")
 
     def test_translate(self):
         handler = MessageHandler(None)

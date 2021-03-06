@@ -179,7 +179,7 @@ class MessageHandler():
         self._config[args] = False
 
     # args: 'file name'
-    def files(self, args: str):
+    def getfile(self, args: str):
         if args:
             if os.path.exists(args):
                 return FileBox.from_file(args)
