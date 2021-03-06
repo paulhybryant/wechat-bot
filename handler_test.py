@@ -12,8 +12,6 @@ class BotTest(unittest.TestCase):
 
     def test_files(self):
         handler = MessageHandler(None)
-        result = handler.files('testdata/Test.docx')
-        self.assertRegex(result.name, 'Test.docx')
         result = handler.files('foo.docx')
         self.assertEqual(result, 'file foo.docx not exists')
         result = handler.files(None)
