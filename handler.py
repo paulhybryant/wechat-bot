@@ -103,7 +103,7 @@ class MessageHandler():
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
         # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f], capture_output=True)
-        result = subprocess.run(['sh', 'doc2pdf.sh', f], capture_output=True)
+        result = subprocess.run(['doc2pdf.sh', f], capture_output=True)
         if result.returncode == 0:
             return ('/tmp/%s.pdf' % basename, None)
         else:
