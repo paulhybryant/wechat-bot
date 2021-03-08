@@ -77,23 +77,25 @@ class MessageHandler():
                 else:
                     await msg.forward(me)
         else:
-            log.error(msg)
+            log.error('Message: %s, Contact: %s, Name: %s' % (msg, msg.talker(), msg.talker().name))
             result = self.handle_cmd(text)
             if result:
                 log.error(result)
                 await msg.say(result)
 
-            if (msg.talker().contact_id == 'paulhybryant' or msg.talker().contact_id == 'paulhybryant0104') and msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
+            if msg.talker().contact_id in ['wxid_5av5yw0udmgp12'] and msg.type() == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 filebox = await msg.to_file_box()
                 doc_re = re.compile(r'(.*)\.docx?')
                 m = doc_re.match(filebox.name)
                 if m:
                     if self._config.get('doc2pdf', True):
-                        await filebox.to_file(filebox.name, True)
-                        converted, error = self.doc2pdf(filebox.name, m.group(1))
+                        f = '/tmp/%s' % filebox.name
+                        await filebox.to_file(f, True)
+                        converted, error = self.doc2pdf(f, m.group(1))
                         if converted:
                             pdf = filebox.from_file(converted)
                             await me.say(pdf)
+
             if msg.type() == MessageType.MESSAGE_TYPE_URL:
                 talker = msg.talker()
                 if talker.name in self._subscriptions:
@@ -103,7 +105,7 @@ class MessageHandler():
     def doc2pdf(self, f, basename):
         # soffice is not available in my environment, yikes!
         # result = subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', f], capture_output=True)
-        result = subprocess.run(['doc2pdf.sh', f], capture_output=True)
+        result = subprocess.run(['./doc2pdf.sh', f], capture_output=True)
         if result.returncode == 0:
             return ('/tmp/%s.pdf' % basename, None)
         else:
