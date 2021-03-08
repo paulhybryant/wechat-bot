@@ -24,7 +24,7 @@ class MessageHandler():
     def __init__(self, bot):
         self._bot = bot
         self._counter = 0
-        self._cmds_re = re.compile(r'#(\w+) (.*)')
+        self._cmds_re = re.compile(r'#(\w+) ?(.*)')
         self._keywords = [
             ['额度'],
             ['融资', '10倍'],
@@ -181,8 +181,8 @@ class MessageHandler():
     # args: 'file name'
     def files(self, args: str):
         if args:
-            if os.path.exists(args):
-                return FileBox.from_file(args)
+            if os.path.exists('files/%s' % args):
+                return FileBox.from_file('files/%s' % args)
             return 'file %s not exists' % args
         else:
             return str(os.listdir('files'))
