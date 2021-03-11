@@ -61,7 +61,7 @@ class MessageHandler():
     async def handle(self, msg: Message):
         self._counter += 1
         log.error('received %s messages' % self._counter)
-        me = self._bot.Contact.load('paulhybryant0104')
+        me = self._bot.Contact.load('paulhybryant')
         text = msg.text()
         mention_self = await msg.mention_self()
         mention_text = await msg.mention_text()
@@ -126,12 +126,12 @@ class MessageHandler():
                 return True
         # TODO: Automatically cache chatroom ids, given topic (room name)
         # TODO: Only forward file from specific talker
-        # 低风险投资3群
-        elif room_id == '4932234304@chatroom':
+        # 低风险投资乙群
+        elif room_id == '18578335159@chatroom':
             if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 return True
-        # 投资学习8群
-        elif room_id == '17346331234@chatroom':
+        # 投资学习9群
+        elif room_id == '20282708242@chatroom':
             if msg_type == MessageType.MESSAGE_TYPE_ATTACHMENT:
                 return True
         else:
